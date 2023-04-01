@@ -1,7 +1,6 @@
 import cv2
 import mediapipe as mp
-import copy
-import numpy as np
+
 # Initialize the MediaPipe Hand Tracking module
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
@@ -41,9 +40,6 @@ goal_square_y[3:6] = [200+10+goal_size*1] * 3
 goal_square_y[6:] = [200+10+goal_size*2] * 3
 
 
-
-
-
 # Create a VideoCapture object for the camera
 cap = cv2.VideoCapture(0)
 
@@ -56,14 +52,12 @@ frame_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 frame_height =cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
 
-
-img = cv2.imread("./data/cat.jpg")
-img_resized = cv2.resize(img,(int(frame_width/3),int(frame_height/3)))
-img_height, img_width, _ = img_resized.shape
-
 # image initial position
 x = 50
 y = 50
+
+fourcc = cv2.VideoWriter_fourcc(*'MPEG')
+out = cv2.VideoWriter('output.avi', fourcc, 20.0, (640,480))
 
 while True:
     # Capture a frame from the camera
@@ -99,7 +93,9 @@ while True:
                 L_thumb_x = int(L_thumb.x * image_width)
                 L_thumb_y = int(L_thumb.y * image_height)
 
-                if (L_thumb_x - L_index_finger_x) ** 2 + (L_thumb_y - L_index_finger_y) ** 2 < 600:
+                # Reset puzzle pieces position
+                if (L_thumb_x - L_index_finger_x) ** 2 + (L_thumb_y - L_index_finger_y) ** 2 < 200:
+                    print("left distance ",(L_thumb_x - L_index_finger_x) ** 2 + (L_thumb_y - L_index_finger_y) ** 2)
                     counter = 0
                     for idx in range(9):
                         square_x[idx] = 0+10+square_size*counter
@@ -121,8 +117,10 @@ while True:
                 R_thumb_x = int(R_thumb.x * image_width)
                 R_thumb_y = int(R_thumb.y * image_height)
 
-                if (R_thumb_x - R_index_finger_x) ** 2 + (R_thumb_y - R_index_finger_y) ** 2 < 600:
-                    #print("distance ",(thumb_x - index_finger_x) ** 2 + (thumb_y - index_finger_y) ** 2)
+
+                # Move puzzle pieces
+                if (R_thumb_x - R_index_finger_x) ** 2 + (R_thumb_y - R_index_finger_y) ** 2 < 400:
+                    print("right distance ",(R_thumb_x - R_index_finger_x) ** 2 + (R_thumb_y - R_index_finger_y) ** 2)
 
                     # create an image explaining this idea
                     # compare squared distance between index_finger and all boxes and choose the box with smallest distance
@@ -229,6 +227,9 @@ while True:
 
     # add the image over the video capture frame
     #frame[y:y+img_height,x:x+img_width] = img_resized
+
+    # save video
+    out.write(frame)
 
     # Display the frame with the square
     cv2.imshow('Hand Tracking', frame)
