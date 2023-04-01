@@ -75,7 +75,7 @@ while True:
     # Extract the hand landmarks from the results
     if results.multi_hand_landmarks:
         for index,hand_landmarks in enumerate(results.multi_hand_landmarks):
-            #print(f"index {index}")
+
             mp_drawing.draw_landmarks(
                     frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
@@ -119,8 +119,7 @@ while True:
 
 
                 # Move puzzle pieces
-                if (R_thumb_x - R_index_finger_x) ** 2 + (R_thumb_y - R_index_finger_y) ** 2 < 400:
-                    print("right distance ",(R_thumb_x - R_index_finger_x) ** 2 + (R_thumb_y - R_index_finger_y) ** 2)
+                if (R_thumb_x - R_index_finger_x) ** 2 + (R_thumb_y - R_index_finger_y) ** 2 < 600:
 
                     # create an image explaining this idea
                     # compare squared distance between index_finger and all boxes and choose the box with smallest distance
@@ -129,9 +128,11 @@ while True:
                     # index of the box closest to your index finger
                     idx = distance_list.index(min(distance_list))
 
-
                     rule_x = square_x[idx] < R_index_finger_x < square_x[idx]+square_size
                     rule_y = square_y[idx] < R_index_finger_y < square_y[idx]+square_size
+
+                    test_x = goal_square_x[idx] < R_index_finger_x < goal_square_x[idx]+goal_size
+                    test_y = goal_square_y[idx] < R_index_finger_y < goal_square_y[idx]+goal_size
 
                     if rule_x and rule_y:
                         # Move the square to the position of the index finger
@@ -146,8 +147,17 @@ while True:
 
     # 9 SQUARES
     # Draw the square on the frame
-    box_start_coords,box_end_coords = zip(*[((sqr_x,sqr_y),(sqr_x+square_size,sqr_y+square_size)) for sqr_x,sqr_y in zip(square_x,square_y)])
+    """
+     A-----B
+     |     |
+     |     |
+     C-----D
+     box_start_coords A (x1,y1) -> (A1(x1,y1),A2(x1,y1),...)
+     box_end_coords D (x2,y2) -> (D1(x2,y2),D2(x2,y2),...)
 
+    Same idea for goal_start_coords and goal_end_coords
+    """
+    box_start_coords,box_end_coords = zip(*[[(sqr_x,sqr_y),(sqr_x+square_size,sqr_y+square_size)] for sqr_x,sqr_y in zip(square_x,square_y)])
 
     ########################################
     # GOAL
@@ -155,7 +165,12 @@ while True:
     ## color of each box
     goal_colors = [(0,0,255)] * 9
 
-    # find closest box for each goal || sample shape output: [(box_0,box_1,box_2,...),(box_0,box_1,box_2,...),...] and [goal_0,goal_1,goal_2,...]
+    # find closest box for each goal
+    """
+    box1 = [distance to goal 1, distance to goal 2, ...]
+    box2 = [distance to goal 1, distance to goal 2, ...]
+    same applies until box 9
+    """
     goal_distance_list = [[(goal_x - box_x) ** 2 + (goal_y - box_y) ** 2 for box_x,box_y in box_start_coords] for goal_x,goal_y in goal_start_coords]
 
     # index of closest box for each goal
@@ -173,6 +188,7 @@ while True:
         goal_rule_y = goal_square_y[goal_idx] < square_y[goal_idx] < goal_square_y[goal_idx]+goal_size
 
         if goal_rule_x and goal_rule_y:
+            print(goal_idx,"inside")
             goal_colors[goal_idx] = (0,255,0)
 
         # fill
