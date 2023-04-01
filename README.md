@@ -17,9 +17,11 @@ if goal_rule_x and goal_rule_y:
 ```
 
 ![img2](https://i.imgur.com/015vzPL.png)
+
 Each of puzzle pieces is compared to each goal location and choose the closest puzzle box for each goal location.
 
 ![img3](https://i.imgur.com/JdJiQks.png)
+
 goal box color turns to green if the goal rules are satisfied as shown on the code above.
 
 ## SETUP
