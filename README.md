@@ -1,6 +1,6 @@
 # Computer vision puzzle
 
-![output](https://github.com/arjiomega/ComputerVision_Puzzle/blob/main/results/output%20(1).gif)
+![output](https://github.com/arjiomega/ComputerVision_Puzzle/blob/main/results/output.gif)
 
 ## How this works
 ![img1](https://i.imgur.com/1QZtUzJ.png)
@@ -25,17 +25,25 @@ Each of puzzle pieces is compared to each goal location and choose the closest p
 goal box color turns to green if the goal rules are satisfied as shown on the code above.
 
 ## SETUP
-setup environment using miniconda
-```bash
-conda create --no-default-packages -n <env_name>
-conda activate <env_name>
-conda install python=3.9
+setup environment using venv
+```shell
+python3.10 -m venv .env
 ```
+if windows
+```shell
+.\.env\Scripts\activate
+```
+if linux
+```shell
+source .env\Scripts\activate
+```
+
+
 install required libraries
-```bash
-pip install -r requirements.txt
+```shell
+pip install -e .
 ```
 run
-```bash
-python main.py
+```shell
+cv_puzzle
 ```
